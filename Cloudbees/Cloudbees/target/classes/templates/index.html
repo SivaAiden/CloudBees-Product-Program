@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+</head>
+<body>
+    <h1>Product Management</h1>
+
+    <h2>Create Product</h2>
+    <form id="createProductForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required><br>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required><br>
+
+        <label for="quantityAvailable">Quantity Available:</label>
+        <input type="number" id="quantityAvailable" name="quantityAvailable" required><br>
+
+        <button type="button" onclick="createProduct()">Create Product</button>
+    </form>
+
+    <h2>Read Product</h2>
+    <form id="readProductForm">
+        <label for="readProductId">Product ID:</label>
+        <input type="number" id="readProductId" name="productId" required><br>
+
+        <button type="button" onclick="readProduct()">Read Product</button>
+    </form>
+    <div id="readProductResult"></div>
+
+    <h2>Update Product</h2>
+    <form id="updateProductForm">
+        <label for="updateProductId">Product ID:</label>
+        <input type="number" id="updateProductId" name="productId" required><br>
+
+        <label for="updatedName">Name:</label>
+        <input type="text" id="updatedName" name="name" required><br>
+
+        <label for="updatedDescription">Description:</label>
+        <input type="text" id="updatedDescription" name="description" required><br>
+
+        <label for="updatedPrice">Price:</label>
+        <input type="number" id="updatedPrice" name="price" required><br>
+
+        <label for="updatedQuantityAvailable">Quantity Available:</label>
+        <input type="number" id="updatedQuantityAvailable" name="quantityAvailable" required><br>
+
+        <button type="button" onclick="updateProduct()">Update Product</button>
+    </form>
+
+    <h2>Delete Product</h2>
+    <form id="deleteProductForm">
+        <label for="deleteProductId">Product ID:</label>
+        <input type="number" id="deleteProductId" name="productId" required><br>
+
+        <button type="button" onclick="deleteProduct()">Delete Product</button>
+    </form>
+
+    <script>
+        function createProduct() {
+            var product = {
+                name: document.getElementById("name").value,
+                description: document.getElementById("description").value,
+                price: document.getElementById("price").value,
+                quantityAvailable: document.getElementById("quantityAvailable").value
+            };
+
+            fetch('/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(product),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Product created successfully');
+                // Clear form fields
+                document.getElementById("name").value = '';
+                document.getElementById("description").value = '';
+                document.getElementById("price").value = '';
+                document.getElementById("quantityAvailable").value = '';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to create product');
+            });
+        }
+
+        function readProduct() {
+            var productId = document.getElementById("readProductId").value;
+            fetch('/api/products/' + productId)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                document.getElementById("readProductResult").innerHTML = JSON.stringify(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to read product');
+            });
+        }
+
+        function updateProduct() {
+            var productId = document.getElementById("updateProductId").value;
+            var product = {
+                productId: productId,
+                name: document.getElementById("updatedName").value,
+                description: document.getElementById("updatedDescription").value,
+                price: document.getElementById("updatedPrice").value,
+                quantityAvailable: document.getElementById("updatedQuantityAvailable").value
+            };
+
+            fetch('/api/products', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(product),
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Success:', response);
+                    alert('Product updated successfully');
+                    // Clear form fields
+                    document.getElementById("updatedName").value = '';
+                    document.getElementById("updatedDescription").value = '';
+                    document.getElementById("updatedPrice").value = '';
+                    document.getElementById("updatedQuantityAvailable").value = '';
+                } else {
+                    console.error('Error:', response);
+                    alert('Failed to update product');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to update product');
+            });
+        }
+
+        function deleteProduct() {
+            var productId = document.getElementById("deleteProductId").value;
+            fetch('/api/products/' + productId, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Success:', response);
+                    alert('Product deleted successfully');
+                    // Clear form field
+                    document.getElementById("deleteProductId").value = '';
+                } else {
+                    console.error('Error:', response);
+                    alert('Failed to delete product');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to delete product');
+            });
+        }
+    </script>
+</body>
+</html>
